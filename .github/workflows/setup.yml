@@ -20,14 +20,34 @@ jobs:
       - run: npm ci
         working-directory: ./moddable
         shell: bash
+      - name : echo cache key
+        run: ehcho "${{ runner.os }}-install-$LATEST_TAG_ID"
+      - name: Restore cached dependencies of Moddale and ESP-IDF
+        id: cache-dependencies-restore
+        uses: actions/cache/restore@v4
+        with:
+          path: |
+             $HOME/.local/share
+             $HOME/.espressif
+          key: ${{ runner.os }}-dependencies-$LATEST_TAG_ID
       - name: install Moddable
+        if: steps.cache-dependencies-restore.outputs.cache-hit != 'true'
         run: npm run setup:moddable
         working-directory: ./moddable
         shell: bash
       - name: install ESP32
+        if: steps.cache-dependencies-restore.outputs.cache-hit != 'true'
         run: source $HOME/.local/share/xs-dev-export.sh && npm run setup:esp32
         working-directory: ./moddable
         shell: bash
+      - name: Save dependencies of Moddale and ESP-IDF to cache
+        id: cache-dependencies-save
+        uses: actions/cache/save@v4
+        with:
+          path: |
+             $HOME/.local/share
+             $HOME/.espressif
+          key: ${{ runner.os }}-dependencies-$LATEST_TAG_ID
       - name: xs-dev doctor
         run: source $HOME/.local/share/xs-dev-export.sh && npm run doctor
         working-directory: ./moddable
