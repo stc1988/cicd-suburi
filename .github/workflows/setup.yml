@@ -34,6 +34,10 @@ jobs:
         shell: bash
       - name: Measurement of cache target size.
         run: du -sh $HOME/.local/share && du -sh .espressif/ 
-        working-directory: $HOMR
+        working-directory: $HOME
+        shell: bash
+      - name: build balls example app for ESP32.
+        run: mcconfig -d -m -p esp32/m5stack examples/piu/balls/manifest.json -t build
+        working-directory: $HOME/.local/share/moddable
         shell: bash
 
