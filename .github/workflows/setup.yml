@@ -11,7 +11,7 @@ jobs:
           RESPONSE=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" $API_URL)
           LATEST_TAG_NAME=$(echo $RESPONSE | jq -r '.[0].tag_name')
           LATEST_TAG_ID=$(echo $RESPONSE | jq -r '.[0].id')
-          echo "Latest release tag_name of Moddable: $LATEST_TAG_NAME" (id:$LATEST_TAG_ID)
+          echo "Latest release tag_name of Moddable: $LATEST_TAG_NAME (id:$LATEST_TAG_ID)"
           echo "::set-output name=latest_tag_id::$LATEST_TAG_ID"
       - uses: actions/setup-node@v4
         with:
