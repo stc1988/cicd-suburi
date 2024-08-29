@@ -36,6 +36,6 @@ jobs:
         run: du -sh $HOME/.local/share && du -sh $HOME/.espressif/ 
         shell: bash
       - name: build balls example app for ESP32.
-        run: mcconfig -d -m -p esp32/m5stack $HOME/.local/share/moddable/examples/piu/balls/manifest.json -t build
+        run: source $HOME/.local/share/xs-dev-export.sh && mcconfig -d -m -p esp32/m5stack $HOME/.local/share/moddable/examples/piu/balls/manifest.json -t build
         shell: bash
 
