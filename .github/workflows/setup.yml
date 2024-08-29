@@ -21,7 +21,7 @@ jobs:
         working-directory: ./moddable
         shell: bash
       - name : echo cache key
-        run: ehcho "${{ runner.os }}-install-$LATEST_TAG_ID"
+        run: echo "${{ runner.os }}-install-$LATEST_TAG_ID"
       - name: Restore cached dependencies of Moddale and ESP-IDF
         id: cache-dependencies-restore
         uses: actions/cache/restore@v4
