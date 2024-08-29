@@ -1,0 +1,15 @@
+{
+  "name": "moddable",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "setup:modable": "xs-dev setup",
+    "setup:esp32": "xs-dev setup --device esp32"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "xs-dev": "^0.32.3"
+  }
+}
