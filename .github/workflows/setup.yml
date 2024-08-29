@@ -13,7 +13,8 @@ jobs:
           LATEST_TAG_NAME=$(echo $RESPONSE | jq -r '.[0].tag_name')
           LATEST_TAG_ID=$(echo $RESPONSE | jq -r '.[0].id')
           echo "Latest release tag_name of Moddable: $LATEST_TAG_NAME (id:$LATEST_TAG_ID)"
-          echo "latest_tag_id=$LATEST_TAG_ID" >> $GITHUB_ENV
+          echo "cache_key:${{ runner.os }}-dependencies-$LATEST_TAG_ID"
+          echo "cache_key=${{ runner.os }}-dependencies-$LATEST_TAG_ID" >> $GITHUB_ENV
       - uses: actions/setup-node@v4
         with:
           node-version: 20
@@ -21,15 +22,15 @@ jobs:
         working-directory: ./moddable
         shell: bash
       - name : echo cache key
-        run: echo "${{ runner.os }}-dependencies-${{ env.latest_tag_id }}"
+        run: echo "${{ env.cache_key }}"
       - name: Restore cached dependencies of Moddale and ESP-IDF
         id: cache-dependencies-restore
         uses: actions/cache/restore@v4
         with:
           path: |
-             $HOME/.local/share
-             $HOME/.espressif
-          key: ${{ runner.os }}-dependencies-${{ env.latest_tag_id }}
+             /home/runner/.local/share
+             /home/runner/.espressif
+          key: ${{ env.cache_key }}
       - name: install Moddable
         if: steps.cache-dependencies-restore.outputs.cache-hit != 'true'
         run: npm run setup:moddable
@@ -45,9 +46,9 @@ jobs:
         uses: actions/cache/save@v4
         with:
           path: |
-             $HOME/.local/share
-             $HOME/.espressif
-          key: ${{ runner.os }}-dependencies-${{ env.latest_tag_id }}
+             /home/runner/.local/share
+             /home/runner/.espressif
+          key: ${{ env.cache_key }}
       - name: xs-dev doctor
         run: source $HOME/.local/share/xs-dev-export.sh && npm run doctor
         working-directory: ./moddable
