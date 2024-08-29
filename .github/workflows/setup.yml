@@ -32,4 +32,8 @@ jobs:
         run: source $HOME/.local/share/xs-dev-export.sh && npm run doctor
         working-directory: ./moddable
         shell: bash
+      - name: Measurement of cache target size.
+        run: du -sh $HOME/.local/share && du -sh .espressif/ 
+        working-directory: $HOMR
+        shell: bash
 
