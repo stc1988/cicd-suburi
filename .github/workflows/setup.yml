@@ -1,0 +1,21 @@
+name: Setup, Build
+on: [push, workflow_dispatch]
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: check latest release tag of Moddable
+        run: |
+          API_URL="https://api.github.com/repos/Moddable-OpenSource/moddable/releases"
+          RESPONSE=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" $API_URL)
+          LATEST_TAG_NAME=$(echo $RESPONSE | jq -r '.[0].tag_name')
+          LATEST_TAG_ID=$(echo $RESPONSE | jq -r '.[0].id')
+          echo "Latest release tag_name of Moddable: $LATEST_TAG_NAME" (id:$LATEST_TAG_ID)
+          echo "::set-output name=latest_tag_id::$LATEST_TAG_ID"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npm ci
+        working-directory: ./moddable
+        shell: bash
