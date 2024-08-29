@@ -33,11 +33,9 @@ jobs:
         working-directory: ./moddable
         shell: bash
       - name: Measurement of cache target size.
-        run: du -sh $HOME/.local/share && du -sh .espressif/ 
-        working-directory: $HOME
+        run: du -sh $HOME/.local/share && du -sh $HOME/.espressif/ 
         shell: bash
       - name: build balls example app for ESP32.
-        run: mcconfig -d -m -p esp32/m5stack examples/piu/balls/manifest.json -t build
-        working-directory: $HOME/.local/share/moddable
+        run: mcconfig -d -m -p esp32/m5stack $HOME/.local/share/moddable/examples/piu/balls/manifest.json -t build
         shell: bash
 
