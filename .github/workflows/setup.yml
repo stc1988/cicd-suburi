@@ -13,7 +13,6 @@ jobs:
           LATEST_TAG_NAME=$(echo $RESPONSE | jq -r '.[0].tag_name')
           LATEST_TAG_ID=$(echo $RESPONSE | jq -r '.[0].id')
           echo "Latest release tag_name of Moddable: $LATEST_TAG_NAME (id:$LATEST_TAG_ID)"
-          echo "cache_key:${{ runner.os }}-dependencies-$LATEST_TAG_ID"
           echo "cache_key=${{ runner.os }}-dependencies-$LATEST_TAG_ID" >> $GITHUB_ENV
       - uses: actions/setup-node@v4
         with:
@@ -21,8 +20,6 @@ jobs:
       - run: npm ci
         working-directory: ./moddable
         shell: bash
-      - name : echo cache key
-        run: echo "${{ env.cache_key }}"
       - name: Restore cached dependencies of Moddale and ESP-IDF
         id: cache-dependencies-restore
         uses: actions/cache/restore@v4
@@ -41,6 +38,13 @@ jobs:
         run: source $HOME/.local/share/xs-dev-export.sh && npm run setup:esp32
         working-directory: ./moddable
         shell: bash
+      - name: xs-dev doctor
+        run: source $HOME/.local/share/xs-dev-export.sh && npm run doctor
+        working-directory: ./moddable
+        shell: bash
+      - name: Measurement of cache target size.
+        run: du -sh $HOME/.local/share && du -sh $HOME/.espressif/ 
+        shell: bash
       - name: Save dependencies of Moddale and ESP-IDF to cache
         id: cache-dependencies-save
         uses: actions/cache/save@v4
@@ -49,13 +53,6 @@ jobs:
              /home/runner/.local/share
              /home/runner/.espressif
           key: ${{ env.cache_key }}
-      - name: xs-dev doctor
-        run: source $HOME/.local/share/xs-dev-export.sh && npm run doctor
-        working-directory: ./moddable
-        shell: bash
-      - name: Measurement of cache target size.
-        run: du -sh $HOME/.local/share && du -sh $HOME/.espressif/ 
-        shell: bash
       - name: build balls example app for ESP32.
         run: source $HOME/.local/share/xs-dev-export.sh && mcconfig -d -m -p esp32/m5stack $HOME/.local/share/moddable/examples/piu/balls/manifest.json -t build
         shell: bash
