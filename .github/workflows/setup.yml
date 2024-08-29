@@ -20,3 +20,16 @@ jobs:
       - run: npm ci
         working-directory: ./moddable
         shell: bash
+      - name: install Moddable
+        run: npm run setup:moddable
+        working-directory: ./moddable
+        shell: bash
+      - name: install ESP32
+        run: source $HOME/.local/share/xs-dev-export.sh && npm run setup:esp32
+        working-directory: ./moddable
+        shell: bash
+      - name: xs-dev doctor
+        run: source $HOME/.local/share/xs-dev-export.sh && npm run doctor
+        working-directory: ./moddable
+        shell: bash
+

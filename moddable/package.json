@@ -4,8 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "setup:modable": "xs-dev setup",
-    "setup:esp32": "xs-dev setup --device esp32"
+    "setup:moddable": "xs-dev setup",
+    "setup:esp32": "xs-dev setup --device esp32",
+    "doctor": "xs-dev doctor"
   },
   "author": "",
   "license": "ISC",
