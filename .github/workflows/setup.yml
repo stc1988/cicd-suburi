@@ -1,5 +1,8 @@
 name: Setup, Build
 on: [push, workflow_dispatch]
+defaults:
+  run:
+    shell: bash
 jobs:
   setup:
     runs-on: ubuntu-latest
@@ -21,7 +24,6 @@ jobs:
           cache: npm
       - run: npm ci
         working-directory: ./moddable
-        shell: bash
       - name: Restore cached dependencies of Moddale and ESP-IDF
         id: cache-dependencies-restore
         uses: actions/cache/restore@v4
@@ -34,19 +36,15 @@ jobs:
         if: steps.cache-dependencies-restore.outputs.cache-hit != 'true'
         run: npm run setup:moddable
         working-directory: ./moddable
-        shell: bash
       - name: install ESP32
         if: steps.cache-dependencies-restore.outputs.cache-hit != 'true'
         run: source $HOME/.local/share/xs-dev-export.sh && npm run setup:esp32
         working-directory: ./moddable
-        shell: bash
       - name: xs-dev doctor
         run: source $HOME/.local/share/xs-dev-export.sh && npm run doctor
         working-directory: ./moddable
-        shell: bash
       - name: Measurement of cache target size.
         run: du -sh $HOME/.local/share && du -sh $HOME/.espressif/ 
-        shell: bash
       - name: Save dependencies of Moddale and ESP-IDF to cache
         id: cache-dependencies-save
         uses: actions/cache/save@v4
@@ -57,5 +55,4 @@ jobs:
           key: ${{ env.cache_key }}
       - name: build balls example app for ESP32.
         run: source $HOME/.local/share/xs-dev-export.sh && mcconfig -d -m -p esp32/m5stack $HOME/.local/share/moddable/examples/piu/balls/manifest.json -t build
-        shell: bash
 
