@@ -47,6 +47,7 @@ jobs:
       - name: Measurement of cache target size.
         run: du -sh $HOME/.local/share && du -sh $HOME/.espressif/ 
       - name: Save dependencies of Moddale and ESP-IDF to cache
+        if: steps.cache-dependencies-restore.outputs.cache-hit != 'true'
         id: cache-dependencies-save
         uses: actions/cache/save@v4
         with:
