@@ -3,6 +3,7 @@ on: [push, workflow_dispatch]
 defaults:
   run:
     shell: bash
+    working-directory: ./moddable
 concurrency:
   group: ${{ github.workflow}}-${{ github.ref }}
   cancel-in-progress: true
@@ -25,8 +26,8 @@ jobs:
         with:
           node-version: 20
           cache: npm
+          cache-dependency-path: ./moddable/package-lock.json
       - run: npm ci
-        working-directory: ./moddable
       - name: Restore cached dependencies of Moddale and ESP-IDF
         id: cache-dependencies-restore
         uses: actions/cache/restore@v4
@@ -38,14 +39,11 @@ jobs:
       - name: install Moddable
         if: steps.cache-dependencies-restore.outputs.cache-hit != 'true'
         run: npm run setup:moddable
-        working-directory: ./moddable
       - name: install ESP32
         if: steps.cache-dependencies-restore.outputs.cache-hit != 'true'
         run: source $HOME/.local/share/xs-dev-export.sh && npm run setup:esp32
-        working-directory: ./moddable
       - name: xs-dev doctor
         run: source $HOME/.local/share/xs-dev-export.sh && npm run doctor
-        working-directory: ./moddable
       - name: Measurement of cache target size.
         run: du -sh $HOME/.local/share && du -sh $HOME/.espressif/ 
       - name: Save dependencies of Moddale and ESP-IDF to cache
