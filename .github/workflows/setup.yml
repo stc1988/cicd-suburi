@@ -1,5 +1,12 @@
 name: Setup, Build
-on: [push, workflow_dispatch]
+on:
+  push:
+  workflow_dispatch:
+    inputs:
+      target-branch:
+        description: "Target branch to setup environment"
+        required: false
+        default: ""
 defaults:
   run:
     shell: bash
@@ -14,20 +21,22 @@ jobs:
     steps:
       - uses: Kesin11/actions-timeline@v2
       - uses: actions/checkout@v4
-      - name: check latest release tag of Moddable
-        run: |
-          API_URL="https://api.github.com/repos/Moddable-OpenSource/moddable/releases"
-          RESPONSE=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" $API_URL)
-          LATEST_TAG_NAME=$(echo $RESPONSE | jq -r '.[0].tag_name')
-          LATEST_TAG_ID=$(echo $RESPONSE | jq -r '.[0].id')
-          echo "Latest release tag_name of Moddable: $LATEST_TAG_NAME (id:$LATEST_TAG_ID)"
-          echo "cache_key=${{ runner.os }}-dependencies-$LATEST_TAG_ID" >> $GITHUB_ENV
       - uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: npm
           cache-dependency-path: ./moddable/package-lock.json
       - run: npm ci
+      - name: check latest release tag of Moddable
+        if: inputs.target-branch == ''
+        run: |
+          API_URL="https://api.github.com/repos/Moddable-OpenSource/moddable/releases"
+          RESPONSE=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" $API_URL)
+          LATEST_TAG_NAME=$(echo $RESPONSE | jq -r '.[0].tag_name')
+          echo "Latest release tag_name of Moddable: $LATEST_TAG_NAME"
+          echo "latest_tag_name=$LATEST_TAG_NAME" >> $GITHUB_ENV
+      - name: set cache_key
+        run: echo "cache_key=${{runner.os}}-dependencies-${${{ env.latest_tag_name}}:-${{ inputs.target-branch}}}" >> $GITHUB_ENV
       - name: Restore cached dependencies of Moddale and ESP-IDF
         id: cache-dependencies-restore
         uses: actions/cache/restore@v4
