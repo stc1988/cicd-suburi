@@ -3,6 +3,7 @@ on: [push, workflow_dispatch]
 jobs:
   setup:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - uses: Kesin11/actions-timeline@v2
       - uses: actions/checkout@v4
@@ -17,6 +18,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
+          cache: npm
       - run: npm ci
         working-directory: ./moddable
         shell: bash
